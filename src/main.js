@@ -48,22 +48,13 @@ var vm = new Vue({
 
           axios.get('users/self')
           .then(function (response) {
-            if (response.status == 200) {
-              vm.self = response.data;
-              vm.$notify({
-                title: 'Login Successful',
-                message: 'Logged in as ' + vm.self.name + '.',
-                type: 'success'
-              });
-              EventBus.$emit('renderUser', vm.self);
-            } else {
-              console.log(response);
-              vm.$notify({
-                title: 'Login Failed',
-                message: 'A validation issue has occurred.',
-                type: 'error'
-              });
-            }
+            vm.self = response.data;
+            vm.$notify({
+              title: 'Login Successful',
+              message: 'Logged in as ' + vm.self.name + '.',
+              type: 'success'
+            });
+            EventBus.$emit('renderUser', vm.self);
           })
           .catch(function (error) {
             console.log(error);
@@ -94,20 +85,12 @@ var vm = new Vue({
 
       axios.post('users/', userParameters)
       .then(function (response) {
-        if (response.status == 201) {
-          vm.$notify({
-            title: 'Account Created',
-            message: 'Your account was created successfully.',
-            type: 'success'
-          });
-        } else {
-          vm.$notify({
-            title: 'Account Creation Failed',
-            message: 'A validation issue has occurred.',
-            type: 'error'
-          });
-          console.log(response);
-        }
+        vm.$notify({
+          title: 'Account Created',
+          message: 'Your account was created successfully.',
+          type: 'success'
+        });
+
       })
       .catch(function (error) {
         console.log(error);
@@ -117,8 +100,53 @@ var vm = new Vue({
           type: 'error'
         });
       })
-    }
+    },
 
+    tryCreatePost : function(postParameters) {
+      vm.$notify({
+        title: 'Posting',
+        message: 'Contacting server...',
+        type: 'info'
+      });
+
+      axios.post('threads/' + currentThread.id + '/posts/', postParameters)
+      .then (function (response) {
+        vm.$notify({
+          title: 'Posted',
+          message: 'Your post was submitted successfully.',
+          type: 'success'
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        vm.$notify({
+          title: 'Posting Failed',
+          message: 'There was an issue making your post.',
+          type: 'error'
+        });
+      });
+    },
+
+    loadThread : function(id) {
+      axios.get('threads/' + id + '/')
+      .then(function (response) {
+        this.thread = response.data;
+        axios.get('threads/' + id + '/posts/')
+        .then(function (response) {
+          this.posts = response.data;
+          EventBus.$emit('renderThread', {
+            thread: this.thread,
+            posts: this.post
+          });
+        })
+        .catch (function (error) {
+          console.log(error);
+        });
+      })
+      .catch (function (error) {
+        console.log(error);
+      });
+    }
   }
 });
 
@@ -133,4 +161,14 @@ EventBus.$on('sendNewUser', userParameters =>{
                      hasSignature: userParameters.hasSignature,
                      signature: userParameters.signature
   });
+})
+
+EventBus.$on('sendNewPost', postParameters => {
+  vm.tryCreatePost({
+    text: postParameters
+  });
+})
+
+EventBus.$on('loadThread', id => {
+  vm.loadThread(id);
 })
