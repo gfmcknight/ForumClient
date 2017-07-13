@@ -15,6 +15,15 @@ axios.defaults.headers.post['Content-Type'] = 'application/json';
 var vm = new Vue({
   el: '#app',
   render: h => h(App),
+  created: function() {
+    axios.get('board/')
+    .then (function (response) {
+      vm.loadTopic(response.data.id);
+    })
+    .catch(function (errror) {
+      console.log(error);
+    });
+  },
   data: {
     token: '',
     self: {},
@@ -90,7 +99,6 @@ var vm = new Vue({
           message: 'Your account was created successfully.',
           type: 'success'
         });
-
       })
       .catch(function (error) {
         console.log(error);
@@ -116,6 +124,7 @@ var vm = new Vue({
           message: 'Your post was submitted successfully.',
           type: 'success'
         });
+        vm.loadThread(this.currentThread.id);
       })
       .catch(function (error) {
         console.log(error);
@@ -130,14 +139,43 @@ var vm = new Vue({
     loadThread : function(id) {
       axios.get('threads/' + id + '/')
       .then(function (response) {
-        this.thread = response.data;
+        vm.thread = response.data;
         axios.get('threads/' + id + '/posts/')
         .then(function (response) {
-          this.posts = response.data;
+          vm.posts = response.data;
           EventBus.$emit('renderThread', {
-            thread: this.thread,
-            posts: this.post
+            thread: vm.thread,
+            posts: vm.posts
           });
+        })
+        .catch (function (error) {
+          console.log(error);
+        });
+      })
+      .catch (function (error) {
+        console.log(error);
+      });
+    },
+
+    loadTopic : function(id) {
+      axios.get('board/' + id + '/')
+      .then(function (response) {
+        vm.currentTopic = response.data;
+        axios.get('board/' + id + '/topics/')
+        .then(function (response) {
+          vm.subtopics = response.data;
+          axios.get('board/' + id + '/threads/')
+          .then(function (response) {
+            vm.threads = response.data;
+            EventBus.$emit('renderTopic', {
+              topic: vm.currentTopic,
+              subtopics: vm.subtopics,
+              threads: vm.threads
+            });
+          })
+          .catch (function (error) {
+            console.log(error);
+          })
         })
         .catch (function (error) {
           console.log(error);
@@ -171,4 +209,8 @@ EventBus.$on('sendNewPost', postParameters => {
 
 EventBus.$on('loadThread', id => {
   vm.loadThread(id);
+})
+
+EventBus.$on('loadTopic', id => {
+  vm.loadTopic(id);
 })

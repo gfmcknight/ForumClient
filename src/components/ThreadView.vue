@@ -42,7 +42,7 @@ export default {
   name: 'board',
   created : function () {
     EventBus.$on('renderThread', this.show);
-    EventBus.$on('renderBoard', this.hide);
+    EventBus.$on('renderTopic', this.hide);
   },
   data () {
     return {

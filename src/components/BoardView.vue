@@ -1,0 +1,143 @@
+<template>
+  <div v-show="showBoard">
+    <el-card class="box-card">
+      <div slot="header" class="threadname">
+        {{ topic.name }}
+      </div>
+      <div class="secondary">
+        <p>{{ topic.description }}</p>
+      </div>
+    </el-card>
+
+    <div v-for="subtopic in subtopics">
+      <br>
+      <div @click="getTopic(subtopic.id)">
+        <el-card class="box-card">
+          <div slot="header" class="postcontent">
+            Topic: {{ subtopic.name }}
+          </div>
+          <div class="secondary">
+            <p>{{ subtopic.description }}</p>
+          </div>
+        </el-card>
+      </div>
+    </div>
+
+    <br>
+    <el-card class="box-card">
+      <el-input
+        type="textarea"
+        :rows="2"
+        placeholder="Create a new thread..."
+        v-model="newThreadText">
+      </el-input>
+      <br></br>
+      <el-button type="primary" @click="makeThreadRequest()">Post</el-button>
+    </el-card>
+
+    <div v-for="thread in threads">
+      <br>
+      <div @click="getThread(thread.id)">
+        <el-card class="box-card">
+          <div slot="header" class="postcontent">
+            Thread: {{ thread.title }}
+          </div>
+          <div class="secondary">
+            <p>by {{ thread.author.name }}, {{ thread.author.status }}, on {{ thread.created }}</p>
+          </div>
+        </el-card>
+      </div>
+    </div>
+
+    <br>
+
+  </div>
+</template>
+
+<script>
+import { EventBus } from './../main.js';
+
+export default {
+  name: 'board',
+  created : function () {
+    EventBus.$on('renderThread', this.hide);
+    EventBus.$on('renderTopic', this.show);
+  },
+  data () {
+    return {
+      showBoard: true,
+      newThreadText: "",
+      topic : {
+        "id": 1,
+        "name": "Index",
+        "description": "This is the root board",
+        "allowsThreads": false
+      },
+      subtopics : [
+        {
+          "id": 2,
+          "name": "Sample Subtopic",
+          "description": "The first subtopic on this board.",
+          "allowsThreads": true
+        }
+      ],
+      threads : [
+        {
+          "id": 1,
+          "title": "My first topic!",
+          "created": "2017-07-11T18:53:53.1608594",
+          "locked": false,
+          "ownerID": 2,
+          "authorID": 1,
+          "author": {
+              "id": 1,
+              "name": "Graham",
+              "email": "graham.mcknight2@gmail.com",
+              "created": "2017-07-11T18:29:45.4903222",
+              "status": "Administrator",
+              "hasSignature": false,
+              "signature": null
+          }
+        }
+      ]
+    }
+  },
+  methods: {
+    show : function(boardParameters) {
+      this.topic = boardParameters.topic;
+      this.subtopics = boardParameters.subtopics;
+      this.threads = boardParameters.threads;
+      this.showBoard = true;
+    },
+    hide : function(threadParameters) {
+      this.showBoard = false;
+    },
+    makeThreadRequest: function() {
+      EventBus.$emit('createThread', { title: this.newThreadText, ownerID: topic.id } );
+    },
+    getTopic(id) {
+      EventBus.$emit('loadTopic', id);
+    },
+    getThread(id) {
+      EventBus.$emit('loadThread', id);
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.boardname {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  text-align: center;
+  font-size: 24px;
+}
+.postcontent {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  font-size: 14px;
+}
+.secondary {
+  font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+  color: gray;
+  font-size: 14px;
+}
+</style>
