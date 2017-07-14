@@ -13,7 +13,7 @@
       </el-col>
       <el-col :span="4" class="userheader">
         <div>
-          {{ status[user.status] }}
+          {{ user.status }}
         </div>
       </el-col>
     </el-row>
@@ -39,14 +39,7 @@ export default {
         status: 4,
         hasSignature: false,
         signature: null
-      },
-      status : [
-        "Administrator",
-        "Moderator",
-        "Active",
-        "Deactivated",
-        "Banned"
-      ]
+      }
     }
   },
   methods: {

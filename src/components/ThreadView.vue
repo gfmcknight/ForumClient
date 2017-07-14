@@ -47,7 +47,7 @@ export default {
   data () {
     return {
       newPostText: "",
-      showThread: true,
+      showThread: false,
       thread: {
         "id": 1,
         "title": "My first topic!",
@@ -133,7 +133,7 @@ export default {
       this.showThread = false;
     },
     makePostRequest: function() {
-      EventBus.$emit('createPost', this.newPostText);
+      EventBus.$emit('sendNewPost', this.newPostText);
     }
   }
 }

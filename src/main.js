@@ -110,6 +110,33 @@ var vm = new Vue({
       })
     },
 
+    tryCreateThread : function(postParameters) {
+      console.log(postParameters);
+      vm.$notify({
+        title: 'Posting',
+        message: 'Contacting server...',
+        type: 'info'
+      });
+
+      axios.post('threads/', postParameters)
+      .then (function (response) {
+        vm.$notify({
+          title: 'Posted',
+          message: 'Your post was submitted successfully.',
+          type: 'success'
+        });
+        vm.loadThread(response.data.id);
+      })
+      .catch(function (error) {
+        console.log(error);
+        vm.$notify({
+          title: 'Posting Failed',
+          message: 'There was an issue making your post.',
+          type: 'error'
+        });
+      });
+    },
+
     tryCreatePost : function(postParameters) {
       vm.$notify({
         title: 'Posting',
@@ -117,14 +144,14 @@ var vm = new Vue({
         type: 'info'
       });
 
-      axios.post('threads/' + currentThread.id + '/posts/', postParameters)
+      axios.post('threads/' + vm.currentThread.id + '/posts/', postParameters)
       .then (function (response) {
         vm.$notify({
           title: 'Posted',
           message: 'Your post was submitted successfully.',
           type: 'success'
         });
-        vm.loadThread(this.currentThread.id);
+        vm.loadThread(vm.currentThread.id);
       })
       .catch(function (error) {
         console.log(error);
@@ -139,12 +166,12 @@ var vm = new Vue({
     loadThread : function(id) {
       axios.get('threads/' + id + '/')
       .then(function (response) {
-        vm.thread = response.data;
+        vm.currentThread = response.data;
         axios.get('threads/' + id + '/posts/')
         .then(function (response) {
           vm.posts = response.data;
           EventBus.$emit('renderThread', {
-            thread: vm.thread,
+            thread: vm.currentThread,
             posts: vm.posts
           });
         })
@@ -204,6 +231,13 @@ EventBus.$on('sendNewUser', userParameters =>{
 EventBus.$on('sendNewPost', postParameters => {
   vm.tryCreatePost({
     text: postParameters
+  });
+})
+
+EventBus.$on('sendNewThread', threadParameters => {
+  vm.tryCreateThread({
+    title: threadParameters,
+    ownerid: vm.currentTopic.id
   });
 })
 

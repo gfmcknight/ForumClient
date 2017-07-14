@@ -23,17 +23,19 @@
       </div>
     </div>
 
-    <br>
-    <el-card class="box-card">
-      <el-input
-        type="textarea"
-        :rows="2"
-        placeholder="Create a new thread..."
-        v-model="newThreadText">
-      </el-input>
-      <br></br>
-      <el-button type="primary" @click="makeThreadRequest()">Post</el-button>
-    </el-card>
+    <div v-show="topic.allowsThreads">
+      <br>
+      <el-card class="box-card">
+        <el-input
+          type="textarea"
+          :rows="2"
+          placeholder="Create a new thread..."
+          v-model="newThreadText">
+        </el-input>
+        <br></br>
+        <el-button type="primary" @click="makeThreadRequest()">Post</el-button>
+      </el-card>
+    </div>
 
     <div v-for="thread in threads">
       <br>
@@ -65,13 +67,13 @@ export default {
   },
   data () {
     return {
-      showBoard: true,
+      showBoard: false,
       newThreadText: "",
       topic : {
         "id": 1,
         "name": "Index",
         "description": "This is the root board",
-        "allowsThreads": false
+        "allowsThreads": true
       },
       subtopics : [
         {
@@ -113,7 +115,7 @@ export default {
       this.showBoard = false;
     },
     makeThreadRequest: function() {
-      EventBus.$emit('createThread', { title: this.newThreadText, ownerID: topic.id } );
+      EventBus.$emit('sendNewThread', this.newThreadText);
     },
     getTopic(id) {
       EventBus.$emit('loadTopic', id);
