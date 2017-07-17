@@ -13,7 +13,7 @@
       </el-col>
       <el-col :span="12">
         <div>
-          <el-input placeholder="Password" type="password" v-model="form.password"></el-input>
+          <el-input placeholder="Password" type="password" v-model="form.password" v-on:keyup.enter.native="login()"></el-input>
         </div>
       </el-col>
       <el-col :span="0">
@@ -62,10 +62,7 @@
         type="error" v-show="fillDialogVisisble">
       </el-alert>
 
-
       <span slot="footer" class="dialog-footer">
-
-
         <el-button @click="newuserVisible = false">Cancel</el-button>
         <el-button type="primary" @click="create">Confirm</el-button>
       </span>

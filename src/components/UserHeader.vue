@@ -11,7 +11,7 @@
           Created on: {{ user.created }}
         </div>
       </el-col>
-      <el-col :span="4" class="userheader">
+      <el-col :span="8" class="userheader">
         <div>
           {{ user.status }}
         </div>
@@ -32,13 +32,13 @@ export default {
     return {
       showUser: false,
       user : {
-        id: 1,
-        name: "Graham",
-        email: null,
-        created: "2017-07-01T00:37:47.1260695",
-        status: 4,
-        hasSignature: false,
-        signature: null
+        "id": 1,
+        "name": "Graham",
+        "email": null,
+        "created": "2017-07-01T00:37:47.1260695",
+        "status": 4,
+        "hasSignature": false,
+        "signature": null
       }
     }
   },

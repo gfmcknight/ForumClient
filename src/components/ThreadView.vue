@@ -128,6 +128,7 @@ export default {
       this.showThread = true;
       this.thread = threadParameters.thread;
       this.posts = threadParameters.posts;
+      this.newPostText = '';
     },
     hide : function(boardParameters) {
       this.showThread = false;

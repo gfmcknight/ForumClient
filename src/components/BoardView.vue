@@ -110,6 +110,7 @@ export default {
       this.subtopics = boardParameters.subtopics;
       this.threads = boardParameters.threads;
       this.showBoard = true;
+      this.newThreadText = '';
     },
     hide : function(threadParameters) {
       this.showBoard = false;
