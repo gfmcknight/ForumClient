@@ -5,6 +5,8 @@ import 'element-ui/lib/theme-default/index.css'
 import locale from 'element-ui/lib/locale/lang/en'
 import App from './App.vue'
 
+import Data from './data.js';
+
 Vue.use(ElementUI, { locale })
 
 export const EventBus = new Vue();
@@ -53,33 +55,28 @@ var vm = new Vue({
         } else {
           axios.defaults.headers.common['session'] = response.data;
           vm.token = response.data;
+          Data.state.token = response.data;
           vm.showLogin = false;
 
           axios.get('users/self')
           .then(function (response) {
             vm.self = response.data;
+            Data.user = response.data;
+            Data.state.loggedIn = true;
             vm.$notify({
               title: 'Login Successful',
               message: 'Logged in as ' + vm.self.name + '.',
               type: 'success'
             });
             EventBus.$emit('renderUser', vm.self);
-          })
-          .catch(function (error) {
-            console.log(error);
-            vm.$notify({
-              title: 'Login Failed',
-              message: 'Unable to contact server.',
-              type: 'error'
-            });
-          })
+          });
         }
       })
       .catch(function (error) {
         console.log(error);
         vm.$notify({
           title: 'Login Failed',
-          message: 'Unable to contact server.',
+          message: error.data,
           type: 'error'
         });
       });
@@ -104,7 +101,7 @@ var vm = new Vue({
         console.log(error);
         vm.$notify({
           title: 'Account Creation Failed',
-          message: 'Unable to contact server.',
+          message: error.data,
           type: 'error'
         });
       })
@@ -131,7 +128,7 @@ var vm = new Vue({
         console.log(error);
         vm.$notify({
           title: 'Posting Failed',
-          message: 'There was an issue making your post.',
+          message: error.data,
           type: 'error'
         });
       });
@@ -157,7 +154,7 @@ var vm = new Vue({
         console.log(error);
         vm.$notify({
           title: 'Posting Failed',
-          message: 'There was an issue making your post.',
+          message: error.data,
           type: 'error'
         });
       });
@@ -167,16 +164,15 @@ var vm = new Vue({
       axios.get('threads/' + id + '/')
       .then(function (response) {
         vm.currentThread = response.data;
+        Data.thread = response.data;
         axios.get('threads/' + id + '/posts/')
         .then(function (response) {
           vm.posts = response.data;
+          Data.posts = response.data;
           EventBus.$emit('renderThread', {
             thread: vm.currentThread,
             posts: vm.posts
           });
-        })
-        .catch (function (error) {
-          console.log(error);
         });
       })
       .catch (function (error) {
@@ -188,24 +184,21 @@ var vm = new Vue({
       axios.get('board/' + id + '/')
       .then(function (response) {
         vm.currentTopic = response.data;
+        Data.topic = response.data;
         axios.get('board/' + id + '/topics/')
         .then(function (response) {
           vm.subtopics = response.data;
+          Data.subtopics = response.data;
           axios.get('board/' + id + '/threads/')
           .then(function (response) {
             vm.threads = response.data;
+            Data.threads = response.data;
             EventBus.$emit('renderTopic', {
               topic: vm.currentTopic,
               subtopics: vm.subtopics,
               threads: vm.threads
             });
-          })
-          .catch (function (error) {
-            console.log(error);
-          })
-        })
-        .catch (function (error) {
-          console.log(error);
+          });
         });
       })
       .catch (function (error) {

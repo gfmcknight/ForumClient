@@ -22,6 +22,7 @@
 
 <script>
 import { EventBus } from './../main.js';
+import Data from './../data.js'
 
 export default {
   name: 'userHeader',
@@ -30,22 +31,19 @@ export default {
   },
   data () {
     return {
-      showUser: false,
-      user : {
-        "id": 1,
-        "name": "Graham",
-        "email": null,
-        "created": "2017-07-01T00:37:47.1260695",
-        "status": 4,
-        "hasSignature": false,
-        "signature": null
-      }
+      state: Data.state,
+      user : Data.user
     }
   },
   methods: {
     show : function(userParameters) {
       this.user = userParameters;
       this.showUser = true;
+    }
+  },
+  computed: {
+    showUser: function() {
+      return this.state.loggedIn;
     }
   }
 }

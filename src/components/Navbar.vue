@@ -2,22 +2,23 @@
   <div>
     <el-menu :default-active="navState" class="navbarstate"
               mode="horizontal" @select="handleSelect">
-    <el-menu-item index="1">{{ root.name }}</el-menu-item>
-    <el-menu-item index="2" v-show="showTopic">{{ currentTopic.name }}</el-menu-item>
-    <el-menu-item index="3" v-show="showThread">{{ currentThread.title }}</el-menu-item>
-    <el-submenu index="4"v-show="showUser">
-      <template slot="title" >{{ username }}</template>
-      <el-menu-item index="4-1">Log Out</el-menu-item>
-      <el-menu-item index="4-2">Change Password</el-menu-item>
-      <el-menu-item index="4-3">Account Details</el-menu-item>
-      <el-menu-item index="4-4">Deactivate Account</el-menu-item>
-    </el-submenu>
-  </el-menu>
+      <el-menu-item index="1">{{ root.name }}</el-menu-item>
+      <el-menu-item index="2" v-show="showTopic">{{ currentTopic.name }}</el-menu-item>
+      <el-menu-item index="3" v-show="showThread">{{ currentThread.title }}</el-menu-item>
+      <el-submenu index="4"v-show="showUser">
+        <template slot="title" >{{ username }}</template>
+        <el-menu-item index="4-1">Log Out</el-menu-item>
+        <el-menu-item index="4-2">Change Password</el-menu-item>
+        <el-menu-item index="4-3">Account Details</el-menu-item>
+        <el-menu-item index="4-4">Deactivate Account</el-menu-item>
+      </el-submenu>
+    </el-menu>
   </div>
 </template>
 
 <script>
 import { EventBus } from './../main.js';
+import Data from './../data.js'
 
 export default {
   name: 'userHeader',
@@ -29,40 +30,20 @@ export default {
   data () {
     return {
         navState: '1',
-        showUser: false,
         username: '',
         rootInitialized: false,
-        root: {
-          "id": 1,
-          "name": "Root",
-          "description": "This is the root board",
-          "allowsThreads": true
-        },
-        currentTopic: {
-          "id": 1,
-          "name": "Index",
-          "description": "This is the root board",
-          "allowsThreads": true
-        },
+        modifyVisible: false,
+        state: Data.state,
+        root: Data.root,
+        currentTopic: Data.topic,
         showTopic: false,
-        currentThread: {
-          "id": 1,
-          "title": "My first topic!",
-          "created": "2017-07-11T18:53:53.1608594",
-          "locked": false,
-          "ownerID": 2,
-          "authorID": 1,
-          "author": {
-            "id": 1,
-            "name": "Graham",
-            "email": "graham.mcknight2@gmail.com",
-            "created": "2017-07-11T18:29:45.4903222",
-            "status": "Administrator",
-            "hasSignature": true,
-            "signature": "null"
-          }
-        },
+        currentThread: Data.thread,
         showThread: false
+    };
+  },
+  computed: {
+    showUser: function() {
+      return this.state.loggedIn;
     }
   },
   methods: {
@@ -77,7 +58,6 @@ export default {
     },
     renderUser : function(userParameters) {
       this.username = userParameters.name;
-      this.showUser = true;
     },
     renderTopic : function(topicParameters) {
       if (!this.rootInitialized) {

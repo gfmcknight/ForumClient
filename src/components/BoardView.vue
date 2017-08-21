@@ -58,6 +58,7 @@
 
 <script>
 import { EventBus } from './../main.js';
+import Data from './../data.js';
 
 export default {
   name: 'board',
@@ -69,39 +70,9 @@ export default {
     return {
       showBoard: false,
       newThreadText: "",
-      topic : {
-        "id": 1,
-        "name": "Index",
-        "description": "This is the root board",
-        "allowsThreads": true
-      },
-      subtopics : [
-        {
-          "id": 2,
-          "name": "Sample Subtopic",
-          "description": "The first subtopic on this board.",
-          "allowsThreads": true
-        }
-      ],
-      threads : [
-        {
-          "id": 1,
-          "title": "My first topic!",
-          "created": "2017-07-11T18:53:53.1608594",
-          "locked": false,
-          "ownerID": 2,
-          "authorID": 1,
-          "author": {
-              "id": 1,
-              "name": "Graham",
-              "email": "graham.mcknight2@gmail.com",
-              "created": "2017-07-11T18:29:45.4903222",
-              "status": "Administrator",
-              "hasSignature": false,
-              "signature": null
-          }
-        }
-      ]
+      topic : Data.topic,
+      subtopics : Data.subtopics,
+      threads : Data.threads
     }
   },
   methods: {
