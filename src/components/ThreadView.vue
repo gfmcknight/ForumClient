@@ -2,14 +2,14 @@
   <div v-show="showThread">
     <el-card class="box-card">
       <div slot="header" class="threadname">
-        {{ thread.title }}
+        {{ thread.ref.title }}
       </div>
       <div class="secondary">
-        <p>by {{ thread.author.name }}, {{ thread.author.status }}, on {{ thread.created }}</p>
-        <p v-if="thread.author.hasSignature" class="signature">"{{ thread.author.signature }}"</p>
+        <p>by {{ thread.ref.author.name }}, {{ thread.ref.author.status }}, on {{ thread.ref.created }}</p>
+        <p v-if="thread.ref.author.hasSignature" class="signature">"{{ thread.ref.author.signature }}"</p>
       </div>
     </el-card>
-    <div v-for="post in posts">
+    <div v-for="post in posts.ref">
       <br>
       <el-card class="box-card">
         <div slot="header" class="postcontent">
@@ -56,8 +56,6 @@ export default {
   methods: {
     show : function(threadParameters) {
       this.showThread = true;
-      this.thread = threadParameters.thread;
-      this.posts = threadParameters.posts;
       this.newPostText = '';
     },
     hide : function(boardParameters) {

@@ -2,14 +2,14 @@
   <div v-show="showBoard">
     <el-card class="box-card">
       <div slot="header" class="threadname">
-        {{ topic.name }}
+        {{ topic.ref.name }}
       </div>
       <div class="secondary">
-        <p>{{ topic.description }}</p>
+        <p>{{ topic.ref.description }}</p>
       </div>
     </el-card>
 
-    <div v-for="subtopic in subtopics">
+    <div v-for="subtopic in subtopics.ref">
       <br>
       <div @click="getTopic(subtopic.id)">
         <el-card class="box-card">
@@ -37,7 +37,7 @@
       </el-card>
     </div>
 
-    <div v-for="thread in threads">
+    <div v-for="thread in threads.ref">
       <br>
       <div @click="getThread(thread.id)">
         <el-card class="box-card">
@@ -77,9 +77,6 @@ export default {
   },
   methods: {
     show : function(boardParameters) {
-      this.topic = boardParameters.topic;
-      this.subtopics = boardParameters.subtopics;
-      this.threads = boardParameters.threads;
       this.showBoard = true;
       this.newThreadText = '';
     },

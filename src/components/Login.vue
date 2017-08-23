@@ -73,13 +73,14 @@
 
 <script>
 import { EventBus } from './../main.js';
+import Data from './../data.js';
 
 export default {
   name: 'login',
   data () {
     return {
-      showLogin : true,
       newuserVisible: false,
+      state: Data.state,
       form: {
         username: '',
         email: '',
@@ -90,6 +91,11 @@ export default {
       },
       fillDialogVisisble: false,
       passwordsMustMatchVisible: false
+    };
+  },
+  computed: {
+    showLogin: function() {
+      return !this.state.loggedIn;
     }
   },
   methods: {
@@ -98,13 +104,9 @@ export default {
       this.fillDialogVisisble = false;
       this.passwordsMustMatchVisible = false;
     },
-    hide : function() {
-      this.showLogin = false;
-      EventBus.$off('renderUser', this.hide);
-    },
     login : function() {
       EventBus.$emit('sendLogin', { username: this.form.username, password : this.form.password });
-      EventBus.$on('renderUser', this.hide);
+      this.form.password = '';
     },
     create : function() {
       if (this.form.password != this.form.confirm) {

@@ -61,7 +61,7 @@ var vm = new Vue({
           axios.get('users/self')
           .then(function (response) {
             vm.self = response.data;
-            Data.user = response.data;
+            Data.user.ref = response.data;
             Data.state.loggedIn = true;
             vm.$notify({
               title: 'Login Successful',
@@ -164,11 +164,11 @@ var vm = new Vue({
       axios.get('threads/' + id + '/')
       .then(function (response) {
         vm.currentThread = response.data;
-        Data.thread = response.data;
+        Data.thread.ref = response.data;
         axios.get('threads/' + id + '/posts/')
         .then(function (response) {
           vm.posts = response.data;
-          Data.posts = response.data;
+          Data.posts.ref = response.data;
           EventBus.$emit('renderThread', {
             thread: vm.currentThread,
             posts: vm.posts
@@ -184,15 +184,15 @@ var vm = new Vue({
       axios.get('board/' + id + '/')
       .then(function (response) {
         vm.currentTopic = response.data;
-        Data.topic = response.data;
+        Data.topic.ref = response.data;
         axios.get('board/' + id + '/topics/')
         .then(function (response) {
           vm.subtopics = response.data;
-          Data.subtopics = response.data;
+          Data.subtopics.ref = response.data;
           axios.get('board/' + id + '/threads/')
           .then(function (response) {
             vm.threads = response.data;
-            Data.threads = response.data;
+            Data.threads.ref = response.data;
             EventBus.$emit('renderTopic', {
               topic: vm.currentTopic,
               subtopics: vm.subtopics,

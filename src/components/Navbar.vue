@@ -2,9 +2,9 @@
   <div>
     <el-menu :default-active="navState" class="navbarstate"
               mode="horizontal" @select="handleSelect">
-      <el-menu-item index="1">{{ root.name }}</el-menu-item>
-      <el-menu-item index="2" v-show="showTopic">{{ currentTopic.name }}</el-menu-item>
-      <el-menu-item index="3" v-show="showThread">{{ currentThread.title }}</el-menu-item>
+      <el-menu-item index="1">{{ root.ref.name }}</el-menu-item>
+      <el-menu-item index="2" v-show="showTopic">{{ currentTopic.ref.name }}</el-menu-item>
+      <el-menu-item index="3" v-show="showThread">{{ currentThread.ref.title }}</el-menu-item>
       <el-submenu index="4"v-show="showUser">
         <template slot="title" >{{ username }}</template>
         <el-menu-item index="4-1">Log Out</el-menu-item>
@@ -31,8 +31,8 @@ export default {
     return {
         navState: '1',
         username: '',
-        rootInitialized: false,
-        modifyVisible: false,
+        modifyUserVisible: false,
+        modifyPasswordVisible: false,
         state: Data.state,
         root: Data.root,
         currentTopic: Data.topic,
@@ -49,31 +49,38 @@ export default {
   methods: {
     handleSelect : function(key, path) {
       if (key == '1') {
-        EventBus.$emit('loadTopic', this.root.id);
+        EventBus.$emit('loadTopic', this.root.ref.id);
       } else if (key == '2') {
-        EventBus.$emit('loadTopic', this.currentTopic.id);
+        EventBus.$emit('loadTopic', this.currentTopic.ref.id);
       } else if (key == '3') {
-        EventBus.$emit('loadThread', this.currentThread.id);
+        EventBus.$emit('loadThread', this.currentThread.ref.id);
+      } else if (key == '4-1') {
+        console.log('Logging out');
+        this.state.loggedIn = false;
+      } else if (key == '4-2') {
+
+      } else if (key == '4-3') {
+
+      } else if (key == '4-4') {
+
       }
     },
     renderUser : function(userParameters) {
       this.username = userParameters.name;
     },
     renderTopic : function(topicParameters) {
-      if (!this.rootInitialized) {
-        this.root = topicParameters.topic;
+      if (!this.state.rootInitialized) {
+        this.root.ref = topicParameters.topic;
         this.navState = '1';
-        this.rootInitialized = true;
+        this.state.rootInitialized = true;
       } else if (topicParameters.topic.id == this.root.id) {
         this.navState = '1';
       } else {
-        this.currentTopic = topicParameters.topic;
         this.showTopic = true;
         this.navState = '2';
       }
     },
     renderThread : function (threadParameters) {
-      this.currentThread = threadParameters.thread;
       this.showThread = true;
       this.navState = '3';
     }

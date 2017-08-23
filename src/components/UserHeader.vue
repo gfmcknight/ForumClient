@@ -3,17 +3,17 @@
     <el-row type="flex" justify="center">
       <el-col :span="8" class="userheader">
         <div>
-          {{ user.name }}
+          {{ user.ref.name }}
         </div>
       </el-col>
       <el-col :span="8" class="userheader">
         <div>
-          Created on: {{ user.created }}
+          Created on: {{ user.ref.created }}
         </div>
       </el-col>
       <el-col :span="8" class="userheader">
         <div>
-          {{ user.status }}
+          {{ user.ref.status }}
         </div>
       </el-col>
     </el-row>
@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     show : function(userParameters) {
-      this.user = userParameters;
       this.showUser = true;
     }
   },
