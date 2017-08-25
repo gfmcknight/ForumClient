@@ -22,7 +22,7 @@
       </el-card>
     </div>
     <br>
-    <el-card class="box-card">
+    <el-card class="box-card" v-show="canMakePost">
       <el-input
         type="textarea"
         :rows="4"
@@ -50,7 +50,15 @@ export default {
       newPostText: "",
       showThread: false,
       thread: Data.thread,
-      posts: Data.posts
+      posts: Data.posts,
+      state: Data.state,
+      user: Data.user
+    }
+  },
+  computed : {
+    canMakePost : function() {
+      return !this.thread.ref.locked && this.state.loggedIn &&
+             this.user.ref.status != 'Banned';
     }
   },
   methods: {

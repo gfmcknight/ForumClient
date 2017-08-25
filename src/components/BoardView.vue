@@ -9,6 +9,22 @@
       </div>
     </el-card>
 
+    <div v-show="canMakeTopic">
+      <br>
+      <el-card class="box-card">
+        <el-input placeholder="New topic title..." v-model="newTopicTitle"></el-input>
+        <el-input
+          type="textarea"
+          :rows="2"
+          placeholder="Subtopic description here..."
+          v-model="newTopicDesc">
+        </el-input>
+        <el-checkbox v-model="newTopicAllowsThreads">Allow Threads</el-checkbox>
+        <br></br>
+        <el-button type="primary" @click="makeTopicRequest()">Post</el-button>
+      </el-card>
+    </div>
+
     <div v-for="subtopic in subtopics.ref">
       <br>
       <div @click="getTopic(subtopic.id)">
@@ -23,7 +39,7 @@
       </div>
     </div>
 
-    <div v-show="topic.allowsThreads">
+    <div v-show="canMakeThread">
       <br>
       <el-card class="box-card">
         <el-input
@@ -69,22 +85,48 @@ export default {
   data () {
     return {
       showBoard: false,
-      newThreadText: "",
+      newThreadText: '',
+
+      newTopicTitle: '',
+      newTopicDesc: '',
+      newTopicAllowsThreads: true,
+
       topic : Data.topic,
       subtopics : Data.subtopics,
-      threads : Data.threads
+      threads : Data.threads,
+      user : Data.user,
+      state: Data.state
+    }
+  },
+  computed: {
+    canMakeTopic : function() {
+      return this.state.loggedIn && this.user.ref.status == 'Administrator';
+    },
+    canMakeThread : function() {
+      return this.topic.ref.allowsThreads && this.state.loggedIn &&
+             this.user.ref.status != 'Banned';
     }
   },
   methods: {
     show : function(boardParameters) {
       this.showBoard = true;
       this.newThreadText = '';
+      this.newTopicTitle = '';
+      this.newTopicDesc = '';
+      this.newTopicAllowsThreads = true;
     },
     hide : function(threadParameters) {
       this.showBoard = false;
     },
     makeThreadRequest: function() {
       EventBus.$emit('sendNewThread', this.newThreadText);
+    },
+    makeTopicRequest: function() {
+      EventBus.$emit('sendNewTopic', {
+        name: this.newTopicTitle,
+        description: this.newTopicDesc,
+        allowsThreads: this.newTopicAllowsThreads
+      });
     },
     getTopic(id) {
       EventBus.$emit('loadTopic', id);

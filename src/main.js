@@ -54,21 +54,18 @@ var vm = new Vue({
           });
         } else {
           axios.defaults.headers.common['session'] = response.data;
-          vm.token = response.data;
           Data.state.token = response.data;
-          vm.showLogin = false;
 
           axios.get('users/self')
           .then(function (response) {
-            vm.self = response.data;
             Data.user.ref = response.data;
             Data.state.loggedIn = true;
             vm.$notify({
               title: 'Login Successful',
-              message: 'Logged in as ' + vm.self.name + '.',
+              message: 'Logged in as ' + Data.user.ref.name + '.',
               type: 'success'
             });
-            EventBus.$emit('renderUser', vm.self);
+            EventBus.$emit('renderUser', Data.user.ref);
           });
         }
       })
@@ -76,7 +73,7 @@ var vm = new Vue({
         console.log(error);
         vm.$notify({
           title: 'Login Failed',
-          message: error.data,
+          message: error.response.data,
           type: 'error'
         });
       });
@@ -98,17 +95,16 @@ var vm = new Vue({
         });
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error.response);
         vm.$notify({
           title: 'Account Creation Failed',
-          message: error.data,
+          message: error.response.data,
           type: 'error'
         });
       })
     },
 
     tryCreateThread : function(postParameters) {
-      console.log(postParameters);
       vm.$notify({
         title: 'Posting',
         message: 'Contacting server...',
@@ -128,7 +124,33 @@ var vm = new Vue({
         console.log(error);
         vm.$notify({
           title: 'Posting Failed',
-          message: error.data,
+          message: error.response.data,
+          type: 'error'
+        });
+      });
+    },
+
+    tryCreateTopic : function(topicParameters) {
+      vm.$notify({
+        title: 'Posting',
+        message: 'Contacting server...',
+        type: 'info'
+      });
+
+      axios.post('board/' + Data.topic.ref.id, topicParameters)
+      .then (function (response) {
+        vm.$notify({
+          title: 'Posted',
+          message: 'Your topic was submitted successfully.',
+          type: 'success'
+        });
+        vm.loadTopic(response.data.id);
+      })
+      .catch(function (error) {
+        console.log(error);
+        vm.$notify({
+          title: 'Posting Failed',
+          message: error.response.data,
           type: 'error'
         });
       });
@@ -141,20 +163,20 @@ var vm = new Vue({
         type: 'info'
       });
 
-      axios.post('threads/' + vm.currentThread.id + '/posts/', postParameters)
+      axios.post('threads/' + Data.thread.ref.id + '/posts/', postParameters)
       .then (function (response) {
         vm.$notify({
           title: 'Posted',
           message: 'Your post was submitted successfully.',
           type: 'success'
         });
-        vm.loadThread(vm.currentThread.id);
+        vm.loadThread(Data.thread.ref.id);
       })
       .catch(function (error) {
         console.log(error);
         vm.$notify({
           title: 'Posting Failed',
-          message: error.data,
+          message: error.response.data,
           type: 'error'
         });
       });
@@ -163,15 +185,13 @@ var vm = new Vue({
     loadThread : function(id) {
       axios.get('threads/' + id + '/')
       .then(function (response) {
-        vm.currentThread = response.data;
         Data.thread.ref = response.data;
         axios.get('threads/' + id + '/posts/')
         .then(function (response) {
-          vm.posts = response.data;
           Data.posts.ref = response.data;
           EventBus.$emit('renderThread', {
-            thread: vm.currentThread,
-            posts: vm.posts
+            thread: Data.thread.ref,
+            posts: Data.posts.ref
           });
         });
       })
@@ -183,20 +203,17 @@ var vm = new Vue({
     loadTopic : function(id) {
       axios.get('board/' + id + '/')
       .then(function (response) {
-        vm.currentTopic = response.data;
         Data.topic.ref = response.data;
         axios.get('board/' + id + '/topics/')
         .then(function (response) {
-          vm.subtopics = response.data;
           Data.subtopics.ref = response.data;
           axios.get('board/' + id + '/threads/')
           .then(function (response) {
-            vm.threads = response.data;
             Data.threads.ref = response.data;
             EventBus.$emit('renderTopic', {
-              topic: vm.currentTopic,
-              subtopics: vm.subtopics,
-              threads: vm.threads
+              topic: Data.topic.ref,
+              subtopics: Data.subtopics.ref,
+              threads: Data.threads.ref
             });
           });
         });
@@ -204,8 +221,64 @@ var vm = new Vue({
       .catch (function (error) {
         console.log(error);
       });
+
+    },
+
+    tryChangePassword : function(userParameters) {
+      vm.$notify({
+        title: 'Changing Password',
+        message: 'Contacting server...',
+        type: 'info'
+      });
+
+      axios.put('users/' + Data.user.ref.id + '/', userParameters)
+      .then(function(response) {
+        vm.$notify({
+          title: 'Changed',
+          message: 'Your password was changed successfully.',
+          type: 'success'
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        vm.$notify({
+          title: 'Password Change Failed',
+          message: error.response.data,
+          type: 'error'
+        });
+      });
+    },
+
+    tryChangeSignature : function(userParameters) {
+      vm.$notify({
+        title: 'Changing Signature',
+        message: 'Contacting server...',
+        type: 'info'
+      });
+
+      axios.put('users/' + Data.user.ref.id + '/', userParameters)
+      .then(function(response) {
+        vm.$notify({
+          title: 'Changed',
+          message: 'Your signature was changed successfully.',
+          type: 'success'
+        });
+      })
+      .catch(function (error) {
+        console.log(error);
+        vm.$notify({
+          title: 'Signature Change Failed',
+          message: error.response.data,
+          type: 'error'
+        });
+      });
+    },
+
+    tryDeactivate : function(userParameters) {
+      axios.put('users/' + Data.user.ref.id + '/', userParameters);
+      Data.state.loggedIn = false;
     }
-  }
+  },
 });
 
 EventBus.$on('sendLogin', userParameters =>{
@@ -230,7 +303,7 @@ EventBus.$on('sendNewPost', postParameters => {
 EventBus.$on('sendNewThread', threadParameters => {
   vm.tryCreateThread({
     title: threadParameters,
-    ownerid: vm.currentTopic.id
+    ownerid: Data.topic.ref.id
   });
 })
 
@@ -240,4 +313,38 @@ EventBus.$on('loadThread', id => {
 
 EventBus.$on('loadTopic', id => {
   vm.loadTopic(id);
+})
+
+EventBus.$on('changePassword', password => {
+  vm.tryChangePassword({ username: Data.user.ref.name,
+                         email: '',
+                         password: password,
+                         status: Data.user.ref.status,
+                         hasSignature: Data.user.ref.hasSignature,
+                         signature: Data.user.ref.signature
+
+  });
+})
+
+EventBus.$on('changeSignature', signatureParameters => {
+  vm.tryChangeSignature({ username: Data.user.ref.name,
+                         email: '',
+                         status: Data.user.ref.status,
+                         hasSignature: signatureParameters.hasSignature,
+                         signature: signatureParameters.signature
+
+  });
+})
+
+EventBus.$on('deactivateAccount', function() {
+  vm.tryDeactivate({ username: Data.user.ref.name,
+                     email: '',
+                     status: 'Deactivated',
+                     hasSignature: Data.user.ref.hasSignature,
+                     signature: Data.user.ref.signature
+  })
+})
+
+EventBus.$on('sendNewTopic', topicParameters => {
+  vm.tryCreateTopic(topicParameters);
 })
