@@ -11,7 +11,7 @@ Vue.use(ElementUI, { locale })
 
 export const EventBus = new Vue();
 
-axios.defaults.baseURL = 'http://localhost:49975/api/';
+axios.defaults.baseURL = '/api/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 var vm = new Vue({

@@ -13,13 +13,15 @@
       <br>
       <el-card class="box-card">
         <el-input placeholder="New topic title..." v-model="newTopicTitle"></el-input>
+        <br></br>
         <el-input
           type="textarea"
           :rows="2"
           placeholder="Subtopic description here..."
           v-model="newTopicDesc">
         </el-input>
-        <el-checkbox v-model="newTopicAllowsThreads">Allow Threads</el-checkbox>
+        <br></br>
+        <el-checkbox v-model="newTopicAllowsThreads" class="postcontent">Allow Threads</el-checkbox>
         <br></br>
         <el-button type="primary" @click="makeTopicRequest()">Post</el-button>
       </el-card>
